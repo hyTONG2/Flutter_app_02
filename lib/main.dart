@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-//import 'package:flutter/rendering.dart';
+import 'package:flutter/rendering.dart';
 
 void main() => runApp(MyApp());
 
@@ -26,22 +26,10 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('数据共享InheritedWidget (HYT)'),
-        /*actions:<Widget>[
-          UnconstrainedBox(
-          child: SizedBox(
-            width:20,
-            height:20,
-            child:CircularProgressIndicator(
-              strokeWidth:3,
-              valueColor:AlwaysStoppedAnimation(Colors.white70),
-            ),
-          )
-          )
-        ]*/
-      ),
-      body: MyHomeContent(),
+      /*appBar: AppBar(
+        //title: Text('路由换肤功能测试 (HYT)'),
+      ),*/
+      body: ThemeTestRoute(),  //7.4.2 主题,
     );
   }
 }
@@ -53,18 +41,29 @@ class MyHomeContent extends StatefulWidget {
 
 class _MyHomeContentState extends State<MyHomeContent> {
   Widget build(BuildContext context) {
+    //return  SingleChildScrollView(
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        /*const Text(
-          'HAHAHAHA好ok',
-        ),*/
-        InheritedWidgetTestRoute(),
+        //InheritedWidgetTestRoute(),   //7.2 数据共享
+        //颜色亮度自定义导航栏测试  //7.4.1 颜色
+        /*
+        Column(
+            children: <Widget>[
+              //背景为蓝色，则title自动为白色
+              NavBar(color: Colors.blue, title: "标题"),
+              //背景为白色，则title自动为黑色
+              NavBar(color: Colors.white, title: "标题"),
+            ]
+        )*/
+       ThemeTestRoute(),  //7.4.2 主题
       ],
+    //),
     );
   }
 }
-
+//7.2 数据共享
+/*
 class ShareDataWidget extends InheritedWidget {
   ShareDataWidget({
     Key? key,
@@ -135,6 +134,112 @@ class _InheritedWidgetTestRouteState extends State<InheritedWidgetTestRoute> {
               onPressed: () => setState(() => ++count),
             )
           ],
+        ),
+      ),
+    );
+  }
+}
+*/
+/*
+//导航栏NavBar 颜色亮度自定义
+class NavBar extends StatelessWidget {
+  final String title;
+  final Color color; //背景颜色
+
+  NavBar({
+    Key? key,
+    required this.color,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: BoxConstraints(
+        minHeight: 52,
+        minWidth: double.infinity,
+      ),
+      decoration: BoxDecoration(
+        color: color,
+        boxShadow: [
+          //阴影
+          BoxShadow(
+            color: Colors.black26,
+            offset: Offset(0, 3),
+            blurRadius: 3,
+          ),
+        ],
+      ),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          //根据背景色亮度来确定Title颜色
+          color: color.computeLuminance() < 0.5 ? Colors.white : Colors.black,
+        ),
+      ),
+      alignment: Alignment.center,
+    );
+  }
+}
+*/
+//7.4.2 主题
+
+class ThemeTestRoute extends StatefulWidget {
+  @override
+  _ThemeTestRouteState createState() => _ThemeTestRouteState();
+}
+
+class _ThemeTestRouteState extends State<ThemeTestRoute> {
+  var _themeColor = Colors.teal; //当前路由主题色
+
+  @override
+  Widget build(BuildContext context) {
+    ThemeData themeData = Theme.of(context);
+    return Theme(
+      data: ThemeData(
+          primarySwatch: _themeColor, //用于导航栏、FloatingActionButton的背景色等
+          iconTheme: IconThemeData(color: _themeColor) //用于Icon颜色
+      ),
+      child: Scaffold(
+        appBar: AppBar(title: Text("路由换肤功能测试 (HYT)")),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            //第一行Icon使用主题中的iconTheme
+            Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(Icons.favorite),
+                  Icon(Icons.airport_shuttle),
+                  Text("  颜色跟随主题")
+                ]
+            ),
+            //为第二行Icon自定义颜色（固定为黑色)
+            Theme(
+              data: themeData.copyWith(
+                iconTheme: themeData.iconTheme.copyWith(
+                    color: Colors.black
+                ),
+              ),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.favorite),
+                    Icon(Icons.airport_shuttle),
+                    Text("  颜色固定黑色")
+                  ]
+              ),
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+            onPressed: () =>  //切换主题
+            setState(() =>
+            _themeColor =
+            _themeColor == Colors.teal ? Colors.blue : Colors.teal
+            ),
+            child: Icon(Icons.palette)
         ),
       ),
     );
